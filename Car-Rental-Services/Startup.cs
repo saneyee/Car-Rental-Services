@@ -22,6 +22,8 @@ namespace Car_Rental_Services
             Configuration = builder.Build();
         }
 
+
+
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -29,6 +31,15 @@ namespace Car_Rental_Services
         {
             // Add framework services.
             services.AddMvc();
+			services.AddEntityFrameworkMySql()
+					.AddDbContext<ApplicationDbContext>(options =>
+											  options
+												   .UseMySql(Configuration["ConnectionStrings:DefaultConnection"]));
+
+			// This is new
+			services.AddIdentity<ApplicationUser, IdentityRole>()
+				.AddEntityFrameworkStores<ApplicationDbContext>()
+				.AddDefaultTokenProviders();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -48,7 +59,7 @@ namespace Car_Rental_Services
             }
 
             app.UseStaticFiles();
-
+			app.UseIdentity();
             app.UseMvc(routes =>
             {
                 routes.MapRoute(
